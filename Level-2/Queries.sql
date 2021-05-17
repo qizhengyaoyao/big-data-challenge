@@ -8,6 +8,9 @@ SELECT COUNT(*) FROM customers;
 
 SELECT COUNT(*) FROM vine_table;
 
+SELECT vine, COUNT(review_id) FROM vine_table
+GROUP BY vine;
+
 SELECT * FROM customers
 ORDER BY customer_count DESC
 LIMIT 10;
@@ -30,13 +33,14 @@ FROM (SELECT
 	  FROM vine_table
 	 ) AS tmp;
 
-SELECT round((AVG(tmp.star_rating))::numeric,2)
+SELECT tmp.product_id, round((AVG(tmp.star_rating))::numeric,2) AS avg_rating
 FROM (
 	SELECT vine_table.review_id, star_rating, review_id_table.product_id
 	FROM vine_table
 	JOIN review_id_table ON vine_table.review_id = review_id_table.review_id
 ) AS tmp
-GROUP BY tmp.product_id;
+GROUP BY tmp.product_id
+ORDER BY avg_rating DESC;
 
 SELECT round((AVG(tmp.star_rating))::numeric,2)
 FROM (
