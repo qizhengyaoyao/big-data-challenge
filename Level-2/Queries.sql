@@ -8,79 +8,42 @@ SELECT COUNT(*) FROM customers;
 
 SELECT COUNT(*) FROM vine_table;
 
+SELECT * FROM vine_table LIMIT 10;
+
+-- Number of reviews by vin and non-vine
 SELECT vine, COUNT(review_id) FROM vine_table
 GROUP BY vine;
 
-SELECT * FROM customers
-ORDER BY customer_count DESC
-LIMIT 10;
+-- Number of 5-star reviews by vine and non-vine
+SELECT vine_5_star.vine, COUNT(vine_5_star.review_id) AS Num_5_star
+FROM (SELECT review_id, vine FROM vine_table WHERE star_rating = 5) AS vine_5_star
+GROUP BY vine_5_star.vine;
 
-SELECT * FROM customers
-WHERE customer_count > 10
-ORDER BY customer_count DESC;
-
-SELECT * FROM vine_table LIMIT 10;
-
-SELECT SUM(helpful_votes) FROM vine_table;
-
-SELECT SUM(total_votes) FROM vine_table;
-
-SELECT tmp.sum_helpful_votes, tmp.sum_total_votes,
-		round((tmp.sum_helpful_votes::decimal / tmp.sum_total_votes::decimal)::numeric,2) AS petcentage
-FROM (SELECT 
-	  SUM(helpful_votes) AS sum_helpful_votes,
-	  SUM(total_votes) AS sum_total_votes
-	  FROM vine_table
-	 ) AS tmp;
-
-SELECT tmp.product_id, round((AVG(tmp.star_rating))::numeric,2) AS avg_rating
-FROM (
-	SELECT vine_table.review_id, star_rating, review_id_table.product_id
-	FROM vine_table
-	JOIN review_id_table ON vine_table.review_id = review_id_table.review_id
-) AS tmp
-GROUP BY tmp.product_id
-ORDER BY avg_rating DESC;
-
-SELECT round((AVG(tmp.star_rating))::numeric,2)
-FROM (
-	SELECT vine_table.review_id, star_rating, review_id_table.product_id
-	FROM vine_table
-	JOIN review_id_table ON vine_table.review_id = review_id_table.review_id
-) AS tmp;
-
-SELECT vine_table.review_id, helpful_votes, total_votes, review_id_table.customer_id
+-- Average rating by vine and non-vine
+SELECT vine, round((AVG(star_rating))::numeric,2) AS avg_rating
 FROM vine_table
-JOIN review_id_table ON vine_table.review_id = review_id_table.review_id;
+GROUP BY vine;
 
-SELECT tmp.customer_id, 
-		COUNT(tmp.customer_id) AS customer_count,
-		SUM(tmp.helpful_votes) AS sum_helpful_votes,
-		SUM(tmp.total_votes) AS sum_total_votes
-FROM (SELECT vine_table.review_id, helpful_votes, total_votes, review_id_table.customer_id
-	  FROM vine_table
-	  JOIN review_id_table ON vine_table.review_id = review_id_table.review_id
-) AS tmp
-GROUP BY tmp.customer_id
-ORDER BY customer_count DESC;
+-- Number of helpful votes by vine and non-vine
+SELECT 
+	vine, SUM(helpful_votes), SUM(total_votes), 
+	round((SUM(helpful_votes)::decimal/SUM(total_votes)::decimal)::numeric,2) AS helpful_rate
+FROM vine_table
+GROUP BY vine;
 
-SELECT tmp2.customer_id, tmp2.customer_count, tmp2.sum_helpful_votes, tmp2.sum_total_votes,
-		round((tmp2.sum_helpful_votes::decimal / tmp2.sum_total_votes::decimal)::numeric,2) AS petcentage
-FROM (SELECT tmp.customer_id, 
-		COUNT(tmp.customer_id) AS customer_count,
-		SUM(tmp.helpful_votes) AS sum_helpful_votes,
-		SUM(tmp.total_votes) AS sum_total_votes
-	  FROM (SELECT vine_table.review_id, helpful_votes, total_votes, review_id_table.customer_id
-	  FROM vine_table
-	  JOIN review_id_table ON vine_table.review_id = review_id_table.review_id
-	  WHERE customer_id IN (SELECT customer_id FROM customers WHERE customer_count > 20)
-) AS tmp
-GROUP BY tmp.customer_id
-) AS tmp2
+-- Top reviewers
+SELECT tmp2.customer_id, tmp2.vine, tmp2.num_reviews, tmp2.sum_helpful_votes, tmp2.sum_total_votes,
+		round((tmp2.sum_helpful_votes::decimal / tmp2.sum_total_votes::decimal)::numeric,2) AS trustworthy
+FROM (SELECT 
+	  tmp.customer_id, tmp.vine, 
+	  COUNT(tmp.customer_id) AS num_reviews, 
+	  SUM(tmp.helpful_votes) AS sum_helpful_votes, 
+	  SUM(tmp.total_votes) AS sum_total_votes 
+	  FROM (
+		  SELECT vine_table.review_id, vine_table.vine, helpful_votes, total_votes, review_id_table.customer_id 
+		  FROM vine_table 
+		  JOIN review_id_table ON vine_table.review_id = review_id_table.review_id 
+		  WHERE customer_id IN (SELECT customer_id FROM customers WHERE customer_count > 10) 
+	  ) AS tmp 
+	  GROUP BY tmp.customer_id, tmp.vine) AS tmp2
 ORDER BY petcentage DESC;
-
-SELECT * FROM vine_table
-WHERE total_votes > 1 AND helpful_votes > total_votes * 0.6;
-
-SELECT COUNT(*) FROM vine_table
-WHERE total_votes > 1 AND helpful_votes > total_votes * 0.6;
