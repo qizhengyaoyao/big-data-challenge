@@ -1,21 +1,5 @@
 # Big Data Homework - "Alexa, can you handle big data?"
 
-### Before You Begin
-
-1. Create a new repository for this project called `big-data-challenge`. **Do not add this homework to an existing repository**.
-
-2. Clone the new repository to your computer.
-
-3. Inside your local git repository, create a directory for the level of challenge Challenge you choose. Use folder names corresponding to the challenges: **level-1** or  **level-2**.
-
-4. Add your converted Google Colab Jupyter notebook to this folder. This will be the main script to run for analysis. Be sure to also add any SQL queries you used to a `.sql` file and add it to your repo.
-
-5. Push the above changes to GitHub or GitLab.
-
-## Note
-
-Keep in mind that this homework is optional! However, you will gain a much greater understanding of ETL processes in Big Data using PySpark and using AWS's Relational Databases if you do complete it.
-
 ## Background
 
 In this assignment you will put your ETL skills to the test. Many of Amazon's shoppers depend on product reviews to make a purchase. Amazon makes these datasets publicly available. However, they are quite large and can exceed the capacity of local machines to handle. One dataset alone contains over 1.5 million rows; with over 40 datasets, this can be quite taxing on the average local computer. Your first goal for this assignment will be to perform the ETL process completely in the cloud and upload a DataFrame to an RDS instance. The second goal will be to use PySpark or SQL to perform a statistical analysis of selected data.
@@ -27,25 +11,15 @@ There are two levels to this homework assignment. The second level is optional b
 
 - - -
 
-## Instructions
+## Summary
 
 ### Level 1
 
-* Use the furnished schema to create tables in your RDS database.
+* Two datasets, [personal care appliances](https://s3.amazonaws.com/amazon-reviews-pds/tsv/amazon_reviews_us_Personal_Care_Appliances_v1_00.tsv.gz) and [mobile electronics](https://s3.amazonaws.com/amazon-reviews-pds/tsv/amazon_reviews_us_Mobile_Electronics_v1_00.tsv.gz) are selected.
 
-* Create two separate Jupyter Notebooks and **extract** any two datasets from the list at [review dataset](https://s3.amazonaws.com/amazon-reviews-pds/tsv/index.txt), one into each notebook.
+* Two notebooks are used to perform the PySpark ETL processes. One need to be run after the other one's ETL process finished.
 
-  **Note:** It is possible to ETL both data sources in a single notebook, but due to the large data sizes, it will be easier to work with these S3 data sources in two separate Jupyter Notebooks.
-
-* Be sure to handle the header correctly. If you read the file without the header parameter, you may find that the column headers are included in the table rows.
-
-* For each notebook (one dataset per notebook), complete the following:
-
-  * Count the number of records (rows) in the dataset.
-
-  * **Transform** the dataset to fit the tables in the [schema file](../Resources/schema.sql). Be sure the DataFrames match in data type and in column name.
-
-  * **Load** the DataFrames that correspond to tables into an RDS instance. **Note:** This process can take up to 10 minutes for each. Be sure that everything is correct before uploading.
+* The numbers of valid records of personal care appliances and mobile electronis are 85978 and 104973.
 
 ### Level 2 (Optional)
 
@@ -55,37 +29,27 @@ In Amazon's Vine program, reviewers receive free products in exchange for review
 
 Amazon has several policies to reduce the bias of its Vine reviews: [https://www.amazon.com/gp/vine/help?ie=UTF8](https://www.amazon.com/gp/vine/help?ie=UTF8).
 
-But are Vine reviews truly trustworthy? Your task is to investigate whether Vine reviews are free of bias. Use either PySpark or—for an extra challenge—SQL to analyze the data.
+Are Vine reviews truly trustworthy? 
 
 * If you choose to use SQL, first use Spark in Google Colab to extract and transform the data and load it into a SQL table on your RDS account. Perform your analysis with SQL queries on RDS.
 
-* While there are no hard requirements for the analysis, consider steps you can take to reduce noisy data, e.g., filtering for reviews that meet a certain number of helpful votes, total votes, or both.
+* There are 190951 reviews have been made. 190901 from non-Vine reviewers and 50 from Vine reviewers.
 
-* Submit a summary of your findings and analysis.
+* There are 101150 5-star reviews have been made. 101120 from non-Vine reviewers and 30 from Vine reviewers.
+
+* Vine reviewers tend to give higher rating. The average rating by all reviews is 3.86. The average rating by non-Vine reviewers is 3.86 and the average rating by Vine reviewers is 4.32.
+
+* Reviews made by Vine reviewers is more trustful. Vine reviews got 1219 votes with an upvote rate at 85% and non-Vine reviews got 417394 with an upvote rate at 81%.
+
+* The top active reviewers are mostly non-Vine reviewers. The upvote rates of the top 5 reviewers are higher than 90%.
+
+In conclusion, vine reviews are trustworthy. However, the vine reviewers are not very active. Active reviewers with higher upvote rate should be recruited by the vine program.
 
 - - -
 
 ## Resources
 
 [customer review datasets](https://s3.amazonaws.com/amazon-reviews-pds/tsv/index.txt)
-
-- - -
-
-## Hints and Considerations
-
-* Be sure to use Google Colab to write your code, it is considerably easier to work with PySpark.
-
-* Be sure to use the PySpark setup code used in the activities to get all setup with PySpark in Google Colab.
-
-- - -
-
-## Submission
-
-* Download your Jupyter Notebooks from Google Colab and include those in your commit to your repo.
-
-* Copy your SQL queries into `.sql` files and include those in your commit to your repo.
-
-* **Important:** Do not upload notebooks that contain your RDS password and endpoint. Be sure to delete them before making your notebook public!
 
 - - -
 

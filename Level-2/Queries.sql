@@ -24,16 +24,20 @@ SELECT vine, round((AVG(star_rating))::numeric,2) AS avg_rating
 FROM vine_table
 GROUP BY vine;
 
+-- Average rating
+SELECT round((AVG(star_rating))::numeric,2) AS avg_rating
+FROM vine_table;
+
 -- Number of helpful votes by vine and non-vine
 SELECT 
 	vine, SUM(helpful_votes), SUM(total_votes), 
-	round((SUM(helpful_votes)::decimal/SUM(total_votes)::decimal)::numeric,2) AS helpful_rate
+	round((SUM(helpful_votes)::decimal/SUM(total_votes)::decimal)::numeric,2) AS upvote_rate
 FROM vine_table
 GROUP BY vine;
 
 -- Top reviewers
 SELECT tmp2.customer_id, tmp2.vine, tmp2.num_reviews, tmp2.sum_helpful_votes, tmp2.sum_total_votes,
-		round((tmp2.sum_helpful_votes::decimal / tmp2.sum_total_votes::decimal)::numeric,2) AS trustworthy
+		round((tmp2.sum_helpful_votes::decimal / tmp2.sum_total_votes::decimal)::numeric,2) AS upvote_rate
 FROM (SELECT 
 	  tmp.customer_id, tmp.vine, 
 	  COUNT(tmp.customer_id) AS num_reviews, 
@@ -46,4 +50,4 @@ FROM (SELECT
 		  WHERE customer_id IN (SELECT customer_id FROM customers WHERE customer_count > 10) 
 	  ) AS tmp 
 	  GROUP BY tmp.customer_id, tmp.vine) AS tmp2
-ORDER BY petcentage DESC;
+ORDER BY upvote_rate DESC;
